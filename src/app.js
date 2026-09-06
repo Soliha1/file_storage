@@ -7,6 +7,9 @@ app.use(express.json())
 
 app.use("/files", useFiles)
 
+app.use((err, req, res, next) => {
+    return res.status(500).json({ error: err.message })
+});
 
 app.listen(3004, ()=>{
     console.log("serevr ishaldi");
