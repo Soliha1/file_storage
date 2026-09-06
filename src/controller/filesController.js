@@ -1,11 +1,10 @@
-const {PrismaClient}=require("@prisma/client")
-const prisma=new PrismaClient()
-
+const { PrismaClient } = require("@prisma/client")
+const prisma = new PrismaClient()
 
 const postFile = async (req, res) => {
     const file = req.file;
 
-    const item = await prisma.Iteam.create({
+    const item = await prisma.Files.create({
         data: {
             name: file.originalname,
             mimType: file.mimetype,
