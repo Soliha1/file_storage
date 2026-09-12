@@ -1,6 +1,7 @@
 const {PrismaClient}=require("@prisma/client")
 const prisma=new PrismaClient()
-
+const fs = require("fs");
+const path = require("path");
 
 const postFile = async (req, res) => {
     const file = req.file;
@@ -62,6 +63,46 @@ const getFileID = async (req, res) => {
 
 
 
+const downloadFile = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        const file = await prisma.file.findUnique({
+            where: {
+                id: id
+            }
+        });
+
+        if (!file) {
+            return res.status(404).json({
+                success: false,
+                message: "File not found"
+            });
+        }
+
+        if (!fs.existsSync(file.file_path)) {
+            return res.status(404).json({
+                success: false,
+                message: "File does not exist on server"
+            });
+        }
+
+        res.setHeader("Content-Type", file.mimType);
+        res.setHeader(
+            "Content-Disposition",
+            `attachment; filename="${file.name}"`
+        );
+
+        const stream = fs.createReadStream(file.file_path);
+
+        stream.pipe(res);
+
+    } catch (error) {
+        next(error);
+    }
+};
+
+
 
 // const updateFiles=async(req, res)=>{
 //   const files = await prisma.Iteam.update({
@@ -85,4 +126,4 @@ const getFileID = async (req, res) => {
 
 
 
-module.exports={ getFiles, postFile, getFileID}
+module.exports={ getFiles, postFile, getFileID, downloadFile}
