@@ -5,67 +5,84 @@ const prisma=new PrismaClient()
 const postFile = async (req, res) => {
     const file = req.file;
 
-    const item = await prisma.Iteam.create({
+    const iteam = await prisma.file.create({
         data: {
             name: file.originalname,
             mimType: file.mimetype,
-            size: file.size
+            size: file.size,
+            file_path: file.path
         }
     });
 
     res.status(201).json({
         success: true,
-        data: item
+        data: iteam
     });
 };
 
-const getFiles = async(req, res) => {
-    const files=await prisma.Iteam.findMany()
-    res.json({
-        data:files
-    })
-}
-
-const getFilesID=async(req, res)=>{
+const getFiles = async (req, res, next) => {
     try {
-        const files = await prisma.Iteam.findUnique({
-            where: {id: Number(req.params.id) }
+        const page = Number(req.query.page) || 1;
+        const limit = 20;
+
+        const skip = (page - 1) * limit;
+
+        const files = await prisma.file.findMany({
+            skip: skip,
+            take: limit
         });
 
-        res.json({
+        res.status(200).json({
+            success: true,
+            page: page,
+            limit: limit,
             data: files
         });
+
     } catch (error) {
-        res.status(404).json({
-            message: "Iteam not found"
-        });
+        next(error);
     }
-
-}
-
+};
 
 
 
-const updateFiles=async(req, res)=>{
-  const files = await prisma.Iteam.update({
-    where: { id: Number(req.params.id) },
-    data: req.body,
-  })
-  res.json(files)
-}
+const getFileID = async (req, res) => {
+    try {
+        const file = req.currentFile; 
 
-
-const deleteFiles=async(req, res)=>{
-    const files =await prisma.Iteam.delete({
-        where: { id: Number(req.params.id) },
-    })
-    res.json({
-        data:files
-    })
-}
+        return res.status(200).json({
+            success: true,
+            data: file
+        });
+    } catch (error) {
+        return res.status(500).json({ message: "Something is wrong with server!" });
+    }
+};
 
 
 
 
 
-module.exports={ getFiles, postFile, getFilesID, updateFiles, deleteFiles}
+// const updateFiles=async(req, res)=>{
+//   const files = await prisma.Iteam.update({
+//     where: { id: Number(req.params.id) },
+//     data: req.body,
+//   })
+//   res.json(files)
+// }
+
+
+// const deleteFiles=async(req, res)=>{
+//     const files =await prisma.Iteam.delete({
+//         where: { id: Number(req.params.id) },
+//     })
+//     res.json({
+//         data:files
+//     })
+// }
+
+
+
+
+
+module.exports={ getFiles, postFile, getFileID}
