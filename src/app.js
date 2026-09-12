@@ -9,5 +9,5 @@ app.use("/files", useFiles)
 
 
 app.listen(3004, ()=>{
-    console.log("serevr ishaldi");
+    console.log("Serevr running");
 });
