@@ -54,7 +54,7 @@ const getFileID = async (req, res) => {
             success: true,
             data: file
         });
-    } catch (error) {
+    } catch {
         return res.status(500).json({ message: "Something is wrong with server!" });
     }
 };
