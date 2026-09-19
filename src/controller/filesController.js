@@ -1,7 +1,6 @@
 const {PrismaClient}=require("@prisma/client")
 const prisma=new PrismaClient()
 const fs = require("fs");
-const path = require("path");
 
 const postFile = async (req, res) => {
     const file = req.file;
@@ -55,7 +54,7 @@ const getFileID = async (req, res) => {
             success: true,
             data: file
         });
-    } catch (error) {
+    } catch {
         return res.status(500).json({ message: "Something is wrong with server!" });
     }
 };

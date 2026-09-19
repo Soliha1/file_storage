@@ -9,6 +9,5 @@ router.get("/", getFiles)
 router.get("/:id", getFileID)
 router.post("/post", upload.single("file"), filespostMiddleware, postFile);
 router.get("/:id/download", downloadFile);
-//router.put("/:id", updateFiles)
 
 module.exports = router
